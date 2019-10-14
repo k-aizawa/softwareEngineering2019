@@ -1,0 +1,71 @@
+
+//•¶Œ£[7]D'Ippolito‚ç,"Synthesis of Live Behavior Models"
+//ó‘Ô”n=592 ‘JˆÚ”m=3280 nlogn=5451iˆµ‚¤Product”F5j
+
+const Max=4
+
+set Tools={drill,press,oven}
+
+Drill=STANDBY,
+STANDBY=(put.drill[id:0..Max]->dril.process[id]->get.drill[id]->STANDBY).
+
+Oven=STANDBY,
+STANDBY=(put.oven[id:0..Max]->oven.process[id]->get.oven[id]->STANDBY).
+
+Press=STANDBY,
+STANDBY=(put.press[id:0..Max]->press.process[id]->get.press[id]->STANDBY).
+
+Product_0(I=0)=TRAY,
+TRAY=(
+	[I].inTray->[I].getInTray->HOLD|
+	idle[I]->TRAY),
+HOLD=(
+	[I].putOutTray->TRAY|
+	put[t:Tools][I]->get.[t][I]->HOLD).
+
+Product_1(I=1)=TRAY,
+TRAY=(
+	[I].inTray->[I].getInTray->HOLD|
+	idle[I]->TRAY),
+HOLD=(
+	[I].putOutTray->TRAY|
+	put[t:Tools][I]->get.[t][I]->HOLD).
+
+Product_2(I=2)=TRAY,
+TRAY=(
+	[I].inTray->[I].getInTray->HOLD|
+	idle[I]->TRAY),
+HOLD=(
+	[I].putOutTray->TRAY|
+	put[t:Tools][I]->get.[t][I]->HOLD).
+
+Product_3(I=3)=TRAY,
+TRAY=(
+	[I].inTray->[I].getInTray->HOLD|
+	idle[I]->TRAY),
+HOLD=(
+	[I].putOutTray->TRAY|
+	put[t:Tools][I]->get.[t][I]->HOLD).
+Product_4(I=4)=TRAY,
+TRAY=(
+	[I].inTray->[I].getInTray->HOLD|
+	idle[I]->TRAY),
+HOLD=(
+	[I].putOutTray->TRAY|
+	put[t:Tools][I]->get.[t][I]->HOLD).
+Product_5(I=5)=TRAY,
+TRAY=(
+	[I].inTray->[I].getInTray->HOLD|
+	idle[I]->TRAY),
+HOLD=(
+	[I].putOutTray->TRAY|
+	put[t:Tools][I]->get.[t][I]->HOLD).
+
+RobotArm=EMPTY,
+EMPTY=([id:0..Max].getInTray->HOLD[id]),
+HOLD[id:0..Max]=(
+	[id].putOutTray->EMPTY|
+	put[t:Tools][id]->get[t][id]->HOLD[id]).
+
+
+||ENV_withProduct5=(Product_0||Product_1||Product_2||Product_3||Product_4||Drill||Oven||Press||RobotArm).

@@ -1,0 +1,23 @@
+
+//D'Ippolito‚ç,"Hope for the Best, Prepare for the Worst: Multi-tier Control for Adaptive Systems"
+//ó‘Ô”n=16 ‘JˆÚ”m=39 nlogn=64 (•¶Œ£’†"VERY_BAD_MAP")
+
+set Locations={w,m,e}
+set Direction={e,w}
+
+VERY_BAD_MAP = (arrive['w] -> MAP['w]),
+MAP['w] = (move['e] -> arrive[x:Locations] -> MAP[x]
+	| move['w] -> arrive[x:Locations] -> MAP[x]
+	| putdown ->(putfail->MAP['w]| putsuccess -> MAP['w])
+	| pickup -> fail -> MAP['w]),
+MAP['m] = (move['e] -> arrive[x:Locations] -> MAP[x]
+	| move['w] -> arrive[x:Locations] -> MAP[x]
+	| putdown -> putfail -> MAP['m]
+	| pickup -> fail -> MAP['m]),
+MAP['e] = (move['e] -> arrive[x:Locations] -> MAP[x]
+	| move['w] -> arrive[x:Locations] -> MAP[x]
+	| putdown -> putfail -> MAP['e]
+	| pickup -> (fail->MAP['e]|success -> MAP['e])).
+
+
+||ENV=VERY_BAD_MAP.

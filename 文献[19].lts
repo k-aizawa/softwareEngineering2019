@@ -1,0 +1,32 @@
+
+//•¶Œ£[19]Aizawa‚ç,"Analysis space reduction with state merging for ensuring safety properties of self-adaptive systems"
+//ó‘Ô”n=52 ‘JˆÚ”m=188 nlogn=296 
+const N=1
+set Requests={reqA,reqB}
+set MOVE={move[0..N],moveOut,moveFeed}
+set Controllable={pickup,putdown,MOVE,process[0..N],reset}//*/}
+
+
+Arm = (Requests->AtFeed),
+AtFeed = (
+	pickup->picksuccess->AtFeed|
+	putdown->putsuccess->AtFeed|
+	move[i:0..N]->AtProcess[i]|
+	moveOut->AtOut|
+	reset->Arm),
+AtProcess[i:0..N]=(
+	pickup->picksuccess->AtProcess[i]|
+	putdown->putsuccess->AtProcess[i]|
+	process[i]->AtProcess[i]|
+	move[j:0..N]->AtProcess[j]|
+	moveFeed->AtFeed|
+	moveOut->AtOut),
+AtOut=(
+	pickup->picksuccess->AtOut|
+	putdown->putsuccess->AtOut|
+	moveFeed->AtFeed|
+	move[i:0..N]->AtProcess[i]).
+
+Process(I=0)=(process[I]->(process[I].end->Process)).
+
+||ENV= (Arm||forall[i:0..N](Process(i))).

@@ -1,0 +1,43 @@
+//•¶Œ£[12]‘ŠàV‚ç,"ŠÂ‹«•Ï‰»Žž‚É•ÛØ‰Â”\‚ÈˆÀ‘S«‚ð“Á’è‚·‚é‚½‚ß‚ÌƒQ[ƒ€•ªÍƒAƒ‹ƒSƒŠƒYƒ€"
+//ó‘Ô”n=2884 ‘JˆÚ”m=7813 nlogn=33148 
+
+const MaxX = 1
+const MaxY = 1
+const MaxTime = 3
+
+const AgentNum = 1
+
+range X = 0..MaxX
+range Y = 0..MaxY
+range A = 0..AgentNum
+
+INITIAL(I = 0) = (when (I == 0) [I].arrive[0][1]->start -> STORAGE[0][1]
+			|when (I ==1) [I].arrive[1][1] ->start-> STORAGE[1][1]
+			|when (I ==2) [I].arrive[0][0] ->start-> STORAGE[0][0]),
+STORAGE[x:X][y:Y] = (when (x < MaxX ) [I].move['e] -> ([I].arrive[x+1][y] -> STORAGE[x+1][y])
+					|when (x > 0 ) [I].move['w] -> [I].arrive[x-1][y]-> STORAGE[x-1][y]
+					|when (x == MaxX) [I].move['e] -> [I].arriveShipping[y]->[I].wait-> SHIPPING[y]
+					|when (x == 0) [I].move['w] -> [I].arriveInduction[y]->[I].wait-> INDUCTION[y]
+					|when (y < MaxY ) [I].move['s] -> [I].arrive[x][y+1]-> STORAGE[x][y+1]
+					|when (y > 0 ) [I].move['n] -> [I].arrive[x][y-1]->STORAGE[x][y-1]
+					|when (y == MaxY) [I].move['s] -> [I].arriveReplenish[x]->[I].wait-> REPLENISH[x]
+					|when (y == 0) [I].move['n] -> [I].arrivePicking[x]->[I].wait-> PICKING[x]
+					|[I].pick -> [I].picksucc -> STORAGE[x][y]
+					|[I].put -> [I].putsucc -> STORAGE[x][y]
+					|end ->reset->start-> STORAGE[x][y]
+),
+SHIPPING[y:Y] = ([I].move['w] ->[I].arrive[MaxX][y]-> STORAGE[MaxX][y]
+				|end ->reset -> INITIAL
+),
+REPLENISH[x:X] =([I].move['n] -> [I].arrive[x][MaxY]-> STORAGE[x][MaxY]
+				|end ->reset -> INITIAL
+), 
+INDUCTION[y:Y]=([I].move['e] -> [I].arrive[0][y]-> STORAGE[0][y]
+				|end ->reset -> INITIAL
+),
+PICKING[x:X]=([I].move['s] -> ([I].arrive[x][0]-> STORAGE[x][0])
+				|end ->reset -> INITIAL
+).
+
+   
+||ENV_IPSJ2018(N = AgentNum)=forall [i: 0..N](INITIAL(i)).
